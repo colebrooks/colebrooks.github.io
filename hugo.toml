@@ -14,8 +14,8 @@ unsafe = true
 noClasses = false
 
 [[menu.main]]
-name = "Docs"
-pageRef = "/docs"
+name = "Posts"
+pageRef = "/posts"
 weight = 1
 
 [[menu.main]]
@@ -25,39 +25,35 @@ weight = 2
 
 [[menu.main]]
 name = "Contact ↗"
-url = "https://github.com/imfing"
+url = "https://github.com/colebrooks"
 weight = 3
 
 [[menu.main]]
-name = "Search"
+name = "Hoho the Sun Bear"
 weight = 4
+
+[[menu.main]]
+name = "Search"
+weight = 5
 
   [menu.main.params]
   type = "search"
 
 [[menu.main]]
 name = "GitHub"
-weight = 5
+weight = 6
 url = "https://github.com/imfing/hextra-starter-template"
 
   [menu.main.params]
   icon = "github"
 
-[[menu.main]]
-name = "Twitter"
-weight = 6
-url = "https://twitter.com/"
-
-  [menu.main.params]
-  icon = "x-twitter"
-
 [params.navbar]
 displayTitle = true
-displayLogo = false
+displayLogo = true
 
 [params.footer]
 displayCopyright = false
-displayPoweredBy = true
+displayPoweredBy = false
 
 [params.editURL]
 enable = true
