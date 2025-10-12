@@ -1,7 +1,6 @@
 baseURL = 'https://www.hohosunbear.com/'
 languageCode = 'en-us'
 title = 'Cole Brooks | Hoho Sun Bear'
-theme = 'hextra'
 contentDir = 'content'
 
 [[module.imports]]
@@ -30,6 +29,7 @@ weight = 3
 
 [[menu.main]]
 name = "Hoho the Sun Bear"
+pageRef = "hoho"
 weight = 4
 
 [[menu.main]]
