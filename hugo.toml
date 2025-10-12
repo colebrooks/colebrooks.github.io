@@ -14,18 +14,18 @@ unsafe = true
 noClasses = false
 
 [[menu.main]]
-name = "Posts"
-pageRef = "/posts"
+name = "About"
+pageRef = "/about"
 weight = 1
 
 [[menu.main]]
-name = "About"
-pageRef = "/about"
+name = "Posts"
+pageRef = "/posts"
 weight = 2
 
 [[menu.main]]
-name = "Contact ↗"
-url = "https://github.com/colebrooks"
+name = "CV"
+pageRef = "cv"
 weight = 3
 
 [[menu.main]]
@@ -41,20 +41,16 @@ weight = 5
 
 [[menu.main]]
 name = "GitHub"
-weight = 6
-url = "https://github.com/imfing/hextra-starter-template"
+weight = 5
+url = "https://github.com/colebrooks"
 
   [menu.main.params]
   icon = "github"
 
 [params.navbar]
 displayTitle = true
-displayLogo = true
+displayLogo = false
 
 [params.footer]
 displayCopyright = false
 displayPoweredBy = false
-
-[params.editURL]
-enable = true
-base = "https://github.com/imfing/hextra-starter-template/edit/main/content"
