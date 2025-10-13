@@ -13,9 +13,9 @@ Hoho was born on October 19th, 1989 just a few minutes after his twin brother Ba
 
 In Omaha, Hoho and Cupcake were fan favorites, and were known for drawing crowds when they caught apples and oranges thrown to them by zookeepers. As part of the Henry Doorly Zoo's 2017 renovations, Hoho and Cupcake were moved to the Topeka Zoo, which specializes in caring for geratric animals. 
 
-Although Honey Bear and Cupcake passed away at the ages of 28 and 30 on June 15th, 2017, and October 28th, 2019 respectively, Hoho and Barney continued to live for several more years, despite the fact that sun bears only live to about 25 years old on average.
-
 Hoho once again became a fan favorite in Topeka, and through the work of the zookeepers, gained an internet following, where he was known for his tongue hanging out of his mouth due to a tooth he had had removed. 
+
+Although Honey Bear and Cupcake passed away at the ages of 28 and 30 on June 15th, 2017, and October 28th, 2019 respectively, Hoho and Barney continued to live for several more years, despite the fact that sun bears only live to about 25 years old on average.
 
 Barney and Hoho each had the distinction of being the oldest known sun bears in North America at the time of their deaths, with Barney passing away on September 17th, 2023, and Hoho passing away on November 25th, 2024, just a month after his 35th birthday. 
 
