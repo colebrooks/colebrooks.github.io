@@ -1,0 +1,13 @@
+.hextra-nav-container {
+    background-image: linear-gradient(to right, #9300D9, #DB9D24);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    background-image: linear-gradient(to right, #9300D9, #DB9D24);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+

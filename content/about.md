@@ -6,10 +6,10 @@ type: about
 ## About Me
 
 ## Tools I Use
-I think I tend to be less opinionated about developement tools than others, and consequently, I like to use a little bit of everything. I like to think that I can find something useful in just about about any piece of kit. Here's a list of the tools I enjoy using, and what I use them for.
+I tend to be less opinionated about developement tools than many others, and consequently, I use a little bit of everything. I'd like to think I can find something useful in just about about any piece of kit. Here's a list of the main tools I enjoy using, and my thoughts on them.
 
 ### Hardware
-I fell in love with **ThinkPads** as a kid when my mom had an R51e. That was the first computer either of my parents had owned, and I still remember loving the aesthetic: so chunky, so black, so *serious* looking. It was imposing, something that was clearly for getting some work done. It ended up becoming my first computer and I ran it with an ExpressCard wireless adapter for quite a while. Naturally, I did my entire college degree on a ThinkPad X220 that I picked up on eBay with a broken back panel for $70. Today I use a **P1 Gen 4** and an **X1 Nano**. 
+I fell in love with **ThinkPads** as a kid when my mom unboxed a brand new R51e. That was the first computer either of my parents had owned, and I still remember loving the aesthetic: so chunky, so black, so *serious* looking. It was imposing, something that was clearly meant for getting some work done. It ended up becoming my first computer and I ran it with an ExpressCard wireless adapter for quite a while. Naturally, I did my entire college degree on a ThinkPad X220 that I picked up on eBay with a broken back panel for $70. Today I use a **P1 Gen 4** and an **X1 Nano**. 
 
 ### OS
 Currently **Ubuntu 24.04** out of convenience, but I've used pretty much everything. I used Arch for quite a while, then Tumbleweed, Fedora periodically, and then installed Ubuntu and just never really felt the need to switch again. It just works. I have some gross GNOME configuration that makes it behave a bit more like I had i3 configured so I can still live mostly on the keyboard. I did end up testing an M2 MacBook Pro for a month or so a while back and I surprisingly enjoyed it. In the future I'd like to give Qubes a shot since I've heard good things about it.

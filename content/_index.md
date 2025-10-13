@@ -3,6 +3,7 @@ toc: false
 ---
 
 # Hi, I'm Cole Brooks
+
 I'm a fullstack developer with production experience building and scaling infrastructure across the stack: from embedded
 systems, to backend architecture, to modern frontend development. As a founding engineer at a biomedical startup, I
 helped design and ship HIPAA compliant software now used by medical professionals and major sports franchises. I focus

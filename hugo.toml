@@ -47,6 +47,10 @@ url = "https://github.com/colebrooks"
   [menu.main.params]
   icon = "github"
 
+[params.theme]
+default = "dark"
+displayToggle = false
+
 [params.navbar]
 displayTitle = true
 displayLogo = false
