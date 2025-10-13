@@ -49,7 +49,7 @@ url = "https://github.com/colebrooks"
 
 [params.theme]
 default = "dark"
-displayToggle = false
+displayToggle = true
 
 [params.navbar]
 displayTitle = true

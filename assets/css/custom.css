@@ -2,6 +2,18 @@
     background-image: linear-gradient(to right, #9300D9, #DB9D24);
 }
 
+.hextra-nav-container:is(html[class~="dark"] *) {
+    span {
+        color: #DB9D24;
+    }
+}
+
+.hextra-nav-container:is(html[class~="light"] *) {
+    span {
+        color: #9300D9;
+    }
+}
+
 h1, h2, h3, h4, h5, h6 {
     background-image: linear-gradient(to right, #9300D9, #DB9D24);
     -webkit-background-clip: text;
