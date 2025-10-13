@@ -53,7 +53,12 @@ displayToggle = false
 
 [params.navbar]
 displayTitle = true
-displayLogo = false
+displayLogo = true
+
+[params.navbar.logo]
+path = "android-chrome-192x192.png"
+width = 40
+height = 40
 
 [params.footer]
 displayCopyright = false
