@@ -167,3 +167,20 @@ Finally, at long last, we've gotten an end to end mailbox fully configured in ``
 Now, you should be able to run ```isync``` with the following command: ```mbsync --all```. This first run can take quite a while depending on how many emails you have on the server, but subsequent invocations are much faster, as only new emails need to be fetched. With that, we've gotten over the first major hurdle of Emacs/text based email: getting the mail. Later on we'll go over how to do this automatically, but for now, congratulate yourself on having completed perhaps the most annoying aspect of this project.
 
 {{% /steps %}}
+
+## mu
+
+Now that we've solved the issue of getting the mail from the server onto the machine, our next task is to make it easy to *do stuff* to the mail we've downloaded. For that our setup uses ```mu```. ```mu``` is an email indexing tool written in C++ that makes operating on Maildir formatted mailboxes easy. ```mu```, as the name would imply, is also the core upon which ```mu4e```, our Emacs major mode, is built on, so getting it up and running is a non-optional step in this process. Lucky for us, this step is quite a bit less involved than ```isync```.
+
+{{% steps %}}
+
+### Installation
+Nothing special here, on Debian based systems, just run ```sudo apt install mu4e```.
+
+### Usage
+```mu``` doesn't require any configuration if you've got your mail in the Maildir format it needs. If you've followed my ```isync``` tutorial, that should be the case. In order for ```mu``` to index your maildir, you'll first have to initialize its database with the command ```mu init -m <maildir> --my-address=<my-email-address>```. For the ```isync``` configuration we built earlier, the command would look like this: ```mu init -m ~/Mail --my-address=cole@hohosunbear.com```. If you've added multiple email address in the ```isync```configuration, then you can repeat the ```--my-address``` parameter as many times as you need. Next, you can actually initiate the indexing like so: ```mu index```. That's it.
+
+### Conclusion
+`mu` is definitely a nice little reprieve from the configuration gauntlet that is ```isync```, and I find it fitting that it's the natural next step. Now we're really starting to get somewhere: we've got two different tools working together, and that's really the name of the game with this project. 
+
+{{% /steps %}}
