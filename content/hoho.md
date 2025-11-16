@@ -11,7 +11,7 @@ As you can probably tell, I *really* love Hoho, to the point that my girlfriend 
 ## Hoho History
 Hoho was born on October 19th, 1989 just a few minutes after his twin brother Barney at the Woodland Park Zoo in Seattle, Washington. In May of 2000, Hoho was moved to the Henry Doorly Zoo in Omaha, Nebraska with a mate named Cupcake, while Barney was moved to the Pueblo Zoo in Pueblo, Colorado with a mate named Honey Bear.
 
-In Omaha, Hoho and Cupcake were fan favorites, and were known for drawing crowds when they caught apples and oranges thrown to them by zookeepers. As part of the Henry Doorly Zoo's 2017 renovations, Hoho and Cupcake were moved to the Topeka Zoo, which specializes in caring for geratric animals. 
+In Omaha, Hoho and Cupcake were fan favorites, and were known for drawing crowds when they caught apples and oranges thrown to them by zookeepers. As part of the Henry Doorly Zoo's 2017 renovations, Hoho and Cupcake were moved to the Topeka Zoo, which specializes in caring for geriatric animals. 
 
 Hoho once again became a fan favorite in Topeka, and through the work of the zookeepers, gained an internet following, where he was known for his tongue hanging out of his mouth due to a tooth he had had removed. 
 
