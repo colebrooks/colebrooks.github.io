@@ -24,7 +24,7 @@ In order to read emails in Emacs, we first have to get them from the server into
 
 ### Installation
 
-Install ```isync```. On Debian based systems, it looks like this: ```sudo apt install isync```.
+Install ```isync```. On Debian based systems, it looks like this: ```apt install isync```.
 
 ### Configuration
 
@@ -38,7 +38,7 @@ While I could define each of these sections (or *classes* as the ```isync``` doc
 
 Finally, we'll also make use of the optional class *Account*. The *Account* class lets us separate a network based *Store's* connection configuration from its file configuration. Essentially, if you have multiple mailboxes on the same server, you can save yourself the typing and apply the same connection configuration to multiple mailboxes.
 
-#### Remote Store Configuration
+#### Remote Store
 Without further ado, here's what the configuration for a remote *Store* looks like:
 ```
 IMAPAccount mxroute
@@ -85,7 +85,7 @@ Account mxroute
 ```
 Again, we start the *Store* class definition with the ```IMAPStore``` keyword. And again, the parameter is just a human readable name of your choice. The ```Account``` keyword really shows of the power of the *Account* class, as we don't really have to do any configuration here, we can just pass it the name we gave our *Account* definition, and it happily uses that. If you're only going to use one *Store* per *Account*, you *can* just populate your *Store* definition with the *Account* options, but I don't really see a reason to ever do so. Finally, if your mail server has any special configuration, there are some other ```IMAPStore``` options you can use, but for most setups, what I have will work just fine.
 
-#### Local Store Configuration
+#### Local Store
 Now that we've told ```isync``` how where to look for the mail on your mail server, we need to tell it where to put that mail on your local machine. To do so, we define a local *Store* that's analogous to the remote one we just defined. Here's my definition:
 ```
 MaildirStore mxroute-local
@@ -109,7 +109,7 @@ This is what stops us from having to manually define each mail folder. You have 
 
 Now we've gotten both *Stores* defined, the remote one on the mail server, and the local one on our workstation. All that's left is to define the *Channel* that connects them and we'll have ```isync``` up and running and synchronizing our emails over secure IMAP. 
 
-#### Channel Configuration
+#### Channel
 The *Channel* class is where ```isync```'s power and flexibility really becomes apparent. Consequently, this is also where you're most likely to find yourself wanting to deviate from my setup. I have what I'd consider sane defaults, but if you find yourself wanting different behaviour, feel free the peruse the documentation and tweak to your heart's content.
 ```
 Channel mxroute
@@ -175,12 +175,100 @@ Now that we've solved the issue of getting the mail from the server onto the mac
 {{% steps %}}
 
 ### Installation
-Nothing special here, on Debian based systems, just run ```sudo apt install mu4e```.
+Nothing special here, on Debian based systems, just run ```apt install mu4e```.
 
 ### Usage
 ```mu``` doesn't require any configuration if you've got your mail in the Maildir format it needs. If you've followed my ```isync``` tutorial, that should be the case. In order for ```mu``` to index your maildir, you'll first have to initialize its database with the command ```mu init -m <maildir> --my-address=<my-email-address>```. For the ```isync``` configuration we built earlier, the command would look like this: ```mu init -m ~/Mail --my-address=cole@hohosunbear.com```. If you've added multiple email address in the ```isync```configuration, then you can repeat the ```--my-address``` parameter as many times as you need. Next, you can actually initiate the indexing like so: ```mu index```. That's it.
 
 ### Conclusion
-`mu` is definitely a nice little reprieve from the configuration gauntlet that is ```isync```, and I find it fitting that it's the natural next step. Now we're really starting to get somewhere: we've got two different tools working together, and that's really the name of the game with this project. 
+`mu` is definitely a nice little reprieve from the configuration gauntlet that is ```isync```, and I find it fitting that it's the natural next step. And, now we're really starting to get somewhere: we've got two different tools working together, which is really the name of the game with this project. 
 
 {{% /steps %}}
+
+## msmtp
+At this point, we could either continue with the ```mu``` configuration, and start working on ```mu4e``` in Emacs, or we could keep setting up Unix-philosophy-adhering programs that make all this work underneath. Since ```mu4e``` isn't all that useful without the ability to *send* emails, I'm voting to continue on the command line and in config files for just a little bit longer. The fun part is coming, I promise, but before we start writing elisp, let's put our heads down, and get the last big piece cemented into place: ```msmtp```. 
+
+As the name implies, ```msmtp``` is the SMTP client we'll be using to send email from ```mu4e```. Much like ```isync```, it relies on a simple configuration file to tell it where, and how, to connect to your mail server. Thankfully, you should already be in the email configuration file mindset, *and* the ```msmtp``` config file is quite a bit less verbose than that of ```isync```.
+
+{{% steps %}}
+
+### Installation
+More of the same: ```apt install msmtp```.
+
+### Configuration
+```msmtp```'s config file lives by default at either ```~/.msmtprc``` or ```$XDG_CONFIG_HOME/msmtp/config```. I like having as much of my configuration as possible in ```~/.config``` and I like default configuration file locations, so I'll be writing my config at ```~/.config/msmtp/config```. An ```msmtp``` config file is organized into *accounts*. Each *account* describes the SMTP server and how to use it. Additionally, there are a few global options that can be set in the config file. We'll start with those.
+
+#### Global Options
+Here's the global section of the ```msmtp``` config:
+
+```
+defaults
+
+auth on
+tls on
+logfile ~/.msmtp.log
+```
+Since this is a short section, we'll just go over the options together. ```defaults``` tells ```msmtp``` to treat the following options as defaults for all accounts defined later in the config. ```auth on``` enables authentication. Obviously we need to authenticate with the mail server. ```tls on``` should also be self explanatory, but for the sake of exhaustiveness it enables TLS. And finally, ```logfile ~/.msmtp.log``` sets the logfile location for ```msmtp```. Simple enough. Now let's move on to the interesting part: *accounts*.
+
+#### Accounts
+Here's the account definition for the same mail server we've been using throughout the tutorial:
+
+```
+account mxroute
+host glacier.mxrouting.net
+port 587
+from cole@hohosunbear.com
+user cole@hohosunbear.com
+passwordeval "gpg -dq $HOME/.pass/mxroute_pass.gpg"
+```
+Looks familiar doesn't it? This should be old news after ```isync```.
+
+```
+account mxroute
+```
+Much like ```isync``` we declare an *account* definition with the ```account``` keyword. We pass a human readable name to the account that we want to refer to it as. Keeping it consistent, I'm calling this *account* "mxroute".
+
+```
+host glacier.mxrouting.net
+port 587
+```
+This is where we tell ```msmtp``` where the it's connecting to is. You'll need to get this information from your mail server. Port 587 is the standard port for secure SMTP mail submission, so unless you are using a non-standard setup, you'll probably be using 587 as well.
+
+```
+from cole@hohosunbear.com
+user cole@hohosunbear.com
+passwordeval "gpg -dq $HOME/.pass/mxroute_pass.gpg"
+```
+Here we tell ```msmtp``` who we are. ```from cole@hohosunbear.com``` sets the *envelope-from* address in the mail. This is the "From" field that recipients will see when they read email you send with this account via ```msmtp```. ```user cole@hohosunbear.com``` is the username ```msmtp``` will use to authenticate with the mail server, and, just like with ```isync```, ```passwordeval "gpg -dq $HOME/.pass/mxroute_pass.gpg"``` passes a shell command that ```msmtp``` can use to get your password. And we're done! Since we don't have to deal with synchronizing local and remote inboxes, once we tell ```msmtp``` where to send and how to send it, we're free to blast emails out as we please.
+
+### Conclusion
+Emacs setup excepted, ```msmtp``` is the last of the moving pieces we needed to set up in order to have full email functionality in Emacs. There's a lot going on, but when you start to think about the system as a whole, it's quite elegant. This setup follows the Unix philosophy to a tee; each of the pieces does one job (and does it well), and can be seamlessly swapped out with another, equivalent piece with minimal changes. This extends even to the frontend you'd like to use to read and compose emails. Tired of ```mu4e```?  Switch to ```mutt``` and it will still work as expected. So, now that we've got the bones of the system working, let's move on to hooking it all up and writing emails in Emacs.
+
+{{% /steps %}}
+
+## Emacs
+We're finally on to the fun part: working in our Emacs config. While we're not stuck learning and writing obscure configuration file formats anymore, our work is still far from done. There's still some configuration to do, only now we get to write it in elisp. While I personally use Doom Emacs, I've written all the elisp in this article in vanilla elisp. Here's what a simple ```mu4e``` configuration looks like:
+
+```elisp
+(require 'mu4e)
+
+;; Use msmtp as the sendmail backend
+(setq sendmail-program (executable-find "msmtp")
+      send-mail-function #'sendmail-send-it
+      message-sendmail-f-is-evil t
+      message-sendmail-extra-arguments '("--read-envelope-from")
+      message-send-mail-function #'message-send-mail-with-sendmail)
+
+;; Mu4e settings
+(setq mu4e-context-policy 'ask-if-none
+      mu4e-compose-context-policy 'always-ask
+      mu4e-update-interval nil
+      mu4e-bookmarks
+      '((:name "Unread messages"
+         :query "flag:unread AND NOT flag:trashed"
+         :key 117)
+        (:name "Today's messages" :query "date:today..now" :key 116)
+        (:name "Last 7 days" :query "date:7d..now" :hide-unread t :key 119)
+        (:name "Messages with images" :query "mime:image/*" :key 112)
+        ("flag:flagged" "Flagged messages" 102)))
+```
