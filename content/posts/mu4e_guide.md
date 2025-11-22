@@ -40,7 +40,7 @@ Finally, we'll also make use of the optional class *Account*. The *Account* clas
 
 #### Remote Store
 Without further ado, here's what the configuration for a remote *Store* looks like:
-```
+```conf
 IMAPAccount mxroute
 Host glacier.mxrouting.net
 Port 993
@@ -54,24 +54,24 @@ Account mxroute
 ```
 Let's walk through the configuration of an *Account* and remote *Store*.
 
-```
+```conf
 IMAPAccount mxroute
 ```
 The configuration starts with what ```isync``` calls a "section-starting keyword" in ```IMAPAccount```. With this keyword, ```isync``` knows that we are defining an *Account* class. The parameter "mxroute" is the human readable name that we can refer to the *Account* by later in the configuration. You can name your *Account* whatever you'd like; since I host my mail on the excellent [MXroute](https://mxroute.com/) mail provider, I called the *Account* "mxroute".
 
-```
+```conf
 Host glacier.mxrouting.net
 Port 993
 ```
 Naturally, the ```Host``` and ```Port``` keywords tell ```isync``` where it needs to connect to the mail server. 993 is the default port for secure IMAP, and unless you have a special setup, this is probably what you'll be using.
 
-```
+```conf
 User cole@hohosunbear.com
 PassCmd "gpg -dq $HOME/.pass/mxroute_pass.gpg"
 ```
 This section is also pretty straightforward. ```User``` is the username you want ```isync``` to log into server as. Here, I'm using the ```PassCmd``` keyword instead of the standard ```Pass``` keyword. If you use ```Pass```, note that your **actual** password will be in your config file, so I'd highly recommend using ```PassCmd``` instead. With ```PassCmd```, you can use any arbitrary shell command to retrieve your password. I've configured mine to retrieve my password from an encrypted file that my keyring can unlock. No cleartext passwords here!
 
-```
+```conf
 SSLType IMAPS
 SSLVersions TLSv1.3
 ```
@@ -79,7 +79,7 @@ The final part of the *Account* definition is configuring SSL. Since we're using
 
 And that's it for the *Account* configuration. If you look back at the full excerpt I posted above, you'll notice that there is a blank line between the *Account* section and the *Store* section. This is necessary, as ```isync``` expects class definitions to be terminated either by a blank line or the end of the file, so don't forget it. Anyway, now we just have to define a remote *Store* and tell it to use the *Account* we've just defined. 
 
-```
+```conf
 IMAPStore mxroute-remote
 Account mxroute
 ```
@@ -87,7 +87,7 @@ Again, we start the *Store* class definition with the ```IMAPStore``` keyword. A
 
 #### Local Store
 Now that we've told ```isync``` how where to look for the mail on your mail server, we need to tell it where to put that mail on your local machine. To do so, we define a local *Store* that's analogous to the remote one we just defined. Here's my definition:
-```
+```conf
 MaildirStore mxroute-local
 Path ~/Mail/HohoSunBear/
 Inbox ~/Mail/HohoSunBear/Inbox
@@ -96,13 +96,13 @@ Subfolders Verbatim
 ```
 Since we *just* defined a remote *Store* we can move a little quicker here. We start the definition with the section-starting keyword ```MaildirStore``` and call it "mxroute-local". We've done this part before.
 
-```
+```conf
 Path ~/Mail/HohoSunBear/
 Inbox ~/Mail/HohoSunBear/Inbox
 ```
 The ```Path``` keyword is the root directory of the mailbox's filesystem on your machine. Typically your maildir will look like mine: a ```Mail``` directory that all your mailboxes live in, and then a subdirectory for each of your mailboxes. In this example, we're configuring my Hoho Sun Bear email, so its path is ```~/Mail/HohoSunBear```. Note that the trailing slash is required if you're intending to specify a directory here, which you probably are. The ```Inbox``` keyword works much the same as ```Path``` but it just tells ```isync``` where you want your inbox.
 
-```
+```conf
 Subfolders Verbatim
 ```
 This is what stops us from having to manually define each mail folder. You have several options here, but I just wanted to keep it simple and have my on-disk hierarchy reflect the mail server's hierarchy, so I just used "Verbatim". This is also what the documentation recommends.
@@ -111,7 +111,7 @@ Now we've gotten both *Stores* defined, the remote one on the mail server, and t
 
 #### Channel
 The *Channel* class is where ```isync```'s power and flexibility really becomes apparent. Consequently, this is also where you're most likely to find yourself wanting to deviate from my setup. I have what I'd consider sane defaults, but if you find yourself wanting different behaviour, feel free the peruse the documentation and tweak to your heart's content.
-```
+```conf
 Channel mxroute
 Far :mxroute-remote:
 Near :mxroute-local:
@@ -124,38 +124,38 @@ SyncState *
 ```
 Once again, we start and name our definition with ```Channel mxroute```.
 
-```
+```conf
 Far :mxroute-remote:
 Near :mxroute-local:
 ```
 This is how we tell the *Channel* which *Stores* it's actually connecting. In case it's not clear, you can think of these as "source" and "destination" respectively. Mail is pulled from ```Far``` into ```Near```. You may optionally specify a mailbox after the *Store* name like so: ```:mxroute-remote:example-mailbox```, but if you don't provide one, "inbox" is assumed.
 
-```
+```conf
 Patterns *
 ```
 ```Patterns``` instructs ```isync``` what you'd actually like to sync between *Stores*. In this case I just used a wildcard since I wanted everything, but there is a ton of customization in case you want to exclude certain mailboxes or pretty much anything else you can think of.
 
-```
+```conf
 Expunge Both
 ```
 This is how you control deletion of emails. Since this is naturally a risky operation, ```isync``` recommends (rightfully so) to set this *after* you've ensured your configuration is otherwise working as intended. With ```Both``` set, messages marked for deletion are deleted on both the ```Near``` and ```Far``` sides of the channel. This is probably what you want, but do some testing before you set it.
 
-```
+```conf
 CopyArrivalDate yes
 ```
 I'm not really sure why one *wouldn't* want this option, but for whatever reason, the default is ```no```. It just ensures the arrival date of messages on the ```Far``` side are propagated to the messages on the ```Near``` side.
 
-```
+```conf
 Sync All
 ```
 Here's the meat of *Channel* as a whole: we're *finally* telling it how to sync the two *Stores*. ```All``` is the default and sets full two-way syncing to between the ```Stores```. Again, this is probably what you want, but there are a bunch of options in case it isn't.
 
-```
+```conf
 Create Both
 ```
 Here we give ```isync``` the power to create mailboxes on either side of the *Channel*. I used ```Near``` initially, since I didn't want mailboxes getting created on the server, but after some testing I've switched to ```Both``` so I don't have to log in to the server directly in order to organize my emails. 
 
-```
+```conf
 SyncState *
 ```
 This is sort of an implementation specific option, and might differ depending on your setup, but put simply, it specifies where ```isync``` should store its metadata files. ```*``` tells it to use a file that is crucially *in* the ```Near``` mailbox itself. If you don't care about that, go ahead and use ```*```, and everything should work as intended. If you have a more advanced setup, you'll have to figure out what you'd like to use here.
@@ -201,7 +201,7 @@ More of the same: ```apt install msmtp```.
 #### Global Options
 Here's the global section of the ```msmtp``` config:
 
-```
+```conf
 defaults
 
 auth on
@@ -213,7 +213,7 @@ Since this is a short section, we'll just go over the options together. ```defau
 #### Accounts
 Here's the account definition for the same mail server we've been using throughout the tutorial:
 
-```
+```conf
 account mxroute
 host glacier.mxrouting.net
 port 587
@@ -223,18 +223,18 @@ passwordeval "gpg -dq $HOME/.pass/mxroute_pass.gpg"
 ```
 Looks familiar doesn't it? This should be old news after ```isync```.
 
-```
+```conf
 account mxroute
 ```
 Much like ```isync``` we declare an *account* definition with the ```account``` keyword. We pass a human readable name to the account that we want to refer to it as. Keeping it consistent, I'm calling this *account* "mxroute".
 
-```
+```conf
 host glacier.mxrouting.net
 port 587
 ```
 This is where we tell ```msmtp``` where the it's connecting to is. You'll need to get this information from your mail server. Port 587 is the standard port for secure SMTP mail submission, so unless you are using a non-standard setup, you'll probably be using 587 as well.
 
-```
+```conf
 from cole@hohosunbear.com
 user cole@hohosunbear.com
 passwordeval "gpg -dq $HOME/.pass/mxroute_pass.gpg"
