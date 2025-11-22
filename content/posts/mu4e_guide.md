@@ -246,29 +246,70 @@ Emacs setup excepted, ```msmtp``` is the last of the moving pieces we needed to 
 
 {{% /steps %}}
 
-## Emacs
-We're finally on to the fun part: working in our Emacs config. While we're not stuck learning and writing obscure configuration file formats anymore, our work is still far from done. There's still some configuration to do, only now we get to write it in elisp. While I personally use Doom Emacs, I've written all the elisp in this article in vanilla elisp. Here's what a simple ```mu4e``` configuration looks like:
+## mu4e
+We're finally on to the fun part: working in our Emacs config. While we're not stuck learning and writing obscure configuration file formats anymore, our work is far from done. There's still some configuration to do, only now we get to write it in elisp. While I personally use Doom Emacs, I've written all the elisp in this article to be compatible with a vanilla install. 
+
+{{% steps %}}
+
+### Basic Settings
+Here's what a simple ```mu4e``` configuration looks like:
 
 ```elisp
 (require 'mu4e)
-
-;; Use msmtp as the sendmail backend
-(setq sendmail-program (executable-find "msmtp")
-      send-mail-function #'sendmail-send-it
-      message-sendmail-f-is-evil t
-      message-sendmail-extra-arguments '("--read-envelope-from")
-      message-send-mail-function #'message-send-mail-with-sendmail)
 
 ;; Mu4e settings
 (setq mu4e-context-policy 'ask-if-none
       mu4e-compose-context-policy 'always-ask
       mu4e-update-interval nil
       mu4e-bookmarks
-      '((:name "Unread messages"
-         :query "flag:unread AND NOT flag:trashed"
-         :key 117)
+      '((:name "Unread" :query "flag:unread AND NOT flag:trashed" :key 117)
         (:name "Today's messages" :query "date:today..now" :key 116)
         (:name "Last 7 days" :query "date:7d..now" :hide-unread t :key 119)
-        (:name "Messages with images" :query "mime:image/*" :key 112)
-        ("flag:flagged" "Flagged messages" 102)))
+        (:name "Messages with images" :query "mime:image/*" :key 112)))
 ```
+
+The first thing to do is load ```mu4e``` into our Emacs. Depending on your setup and the package manager you're using, this will look a little different. The classic way is like so: ```(require mu4e)```. Once we've got the package loaded, we need to do some basic setup. There are a ton of options, but the few that I've selected should be a decent starting point for most people. Let's go through them one by one.
+
+* ```mu4e-context-policy 'ask-if-none``` - This is a setting that you'll really only need if you decide to configure multiple email accounts. ```mu4e``` delineates accounts (and their requisite configurations) into what it calls *contexts*. It has a mechanism by which it will try to infer the context it should be using, and this setting tells it how to select a context when opening the main menu. The value I've selected, ```ask-if-none```, tells it to simply ask the user if it hasn't gotten a context by some other mechanism.
+
+* ```mu4e-compose-context-policy 'always-ask``` - Similarly, this setting instructs ```mu4e``` how it should determine a context when composing an email. For simplicity's sake, I've chosen to have it always ask me which context to use. Hence, ```always-ask```.
+
+* ```mu4e-update-interval nil``` - `mu4e` has a built-in mechanism to handle retrieving mail, and then indexing it. I'm actually handling this with a different mechanism which we'll get to later, so I've disabled the internal update mechanism. 
+
+* `mu4e-bookmarks` - Because it's Emacs, `mu4e` offers *extensive* customization over its main screen. The `mu4e-bookmarks` variable allows you to specify queries you may run on your maildir ahead of time. The values above are the defaults, but rest assured, the options are unlimited.
+
+At this point, you should already be able to run `mu4e` and browse your downloaded emails. It doesn't need to know anything about `isync` because we're not using the built-in mail fetching functionality. As long as the messages are in the maildir it expects them to be, it will dutifully show them to you. However, because it *does* need to interact with `msmtp` in order to *send* mail, we do have to tell it that.
+
+### message/sendmail Configuration
+Sending mail with `mu4e` is, perhaps unsurprisingly, a fairly complicated subject, mostly due to the multitude of different pieces that make up the pipeline, both on the Emacs level, and the OS level. `mu4e` sends email via the Emacs built-in `message-mode`. `message-mode`is a pretty bare bones email composition mode, and was originally intended to be used with the `GNUS`email/article reader...thing. It's funky. Anyway, because we're going to be sending mail with `msmtp`, we're going to have to tell *`message-mode`* to use `msmtp`. Unfortunately, that's a little circuitous. 
+
+```elisp
+(setq message-send-mail-function #'message-send-mail-with-sendmail
+      send-mail-function #'sendmail-send-it
+      sendmail-program (executable-find "msmtp")
+      message-sendmail-f-is-evil t
+      message-sendmail-extra-arguments '("--read-envelope-from")
+      )
+```
+
+* `message-send-mail-function #'message-send-mail-with-sendmail` - In order to use a custom program to send mail with `message-mode`, we need to configure `message-mode` to use the *even more bare bones* `mail-mode` (which is in `sendmail.el`). Only then can we configure *`mail-mode`* to use `msmtp`. So here, we're just configuring `message-mode` to send its mail via `mail-mode`.
+
+* `send-mail-function #'sendmail-send-it` - `mail-mode` has several different mechanisms by which it can infer, delegate, or otherwise modify the mail sending pipeline, but since we've already done the configuration work on the backend, we just want it to send the mail with the program its told to, that being `msmtp` shortly.
+
+* `sendmail-program (executable-find "msmtp")` - `mail-mode` by default just invokes the `sendmail` utility that ships with nearly every Linux distribution. But, since we're using `msmtp`, we're going to set `mail-mode`'s executable to that instead. Now, finally, when we send a mail from `mu4e`, which invokes `message-mode`, which invokes ``mail-mode`, `mail-mode` will then invoke `/usr/bin/msmtp` instead of `/usr/sbin/sendmail`. Whew.
+
+* `message-sendmail-f-is-evil t` - Here's a fun one. Due to the esoteric variable name, the documentation is quite a bit more detailed than most of the other ones:
+  ```
+  Non-nil means don't add "-f username" to the "sendmail" command line.
+  
+  The "sendmail" program has a useful feature to let you set the
+  envelope FROM address via a command line option, "-f".
+  Unfortunately, it also has a widely disliked default behavior of
+  disclosing your actual user name anyway by inserting an
+  unattractive warning in the headers.
+  ```
+  Yeah, we don't want `message-mode` to be messing with the command line arguments, so we'll definitely want to enable this option.
+   
+* `message-sendmail-extra-arguments '("--read-envelope-from")` - This variable allows us to specify extra command line arguments that we actually *do* want. Even though we literally just turned off the `-f` flag that's supposed to add the `smtp.mailfrom` (or envelope from) address, we still do want to set it, albeit correctly. The `msmtp` flag `--read-envelope-from` does just that. It sets the `smtp.mailfrom` address based on the header `FROM` address.
+
+{{% /steps %}}
