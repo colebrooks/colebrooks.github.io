@@ -312,4 +312,31 @@ Sending mail with `mu4e` is, perhaps unsurprisingly, a fairly complicated subjec
    
 * `message-sendmail-extra-arguments '("--read-envelope-from")` - This variable allows us to specify extra command line arguments that we actually *do* want. Even though we literally just turned off the `-f` flag that's supposed to add the `smtp.mailfrom` (or envelope from) address, we still do want to set it, albeit correctly. The `msmtp` flag `--read-envelope-from` does just that. It sets the `smtp.mailfrom` address based on the header `FROM` address.
 
+### Contexts
+Yes, there is still more to configure. As I mentioned above, `mu4e` uses structures called *contexts* to define specific behavior on a per-account basis. Even though we've only configured one email account, we still need to build a context for it. Contexts are perhaps the most powerful (and complicated) aspect of `mu4e`, so while I'm going to show an extremely basic example, I'd highly recommend reading the [`mu4e` context documentation](https://www.djcbsoftware.nl/code/mu/mu4e/Contexts.html) so you can see the true capabilities of contexts.
+
+`mu4e` defines a struct called `mu4e-context`, which then gives us access to the constructor `make-mu4e-context`. As the name implies, this is what we'll be using to build our context:
+
+```elisp
+(let ((context
+      (make-mu4e-context
+       :name "HohoSunBear"
+       :enter-func (lambda ()
+                     (mu4e-message "Switched to HohoSunBear"))
+       :leave-func (lambda ()
+                     (mu4e-message "Leaving HohoSunBear"))
+       :match-func
+       (lambda (msg)
+         (when msg
+           (string-prefix-p (format "/%s" label)
+                            (mu4e-message-field msg :maildir) t)))
+       :vars '((user-full-name     . "Cole Brooks")
+               (user-mail-address  . "cole@hohosunbear.com")
+               (mu4e-sent-folder   . "/HohoSunBear/Sent")
+               (mu4e-drafts-folder . "/HohoSunBear/Drafts")
+               (mu4e-trash-folder  . "/HohoSunBear/Trash")))))
+  (add-to-list 'mu4e-contexts context)
+  context)
+```
+
 {{% /steps %}}
