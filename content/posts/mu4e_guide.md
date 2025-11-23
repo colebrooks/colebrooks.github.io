@@ -354,6 +354,51 @@ All that's left to do is add the newly created context to the `mu4e-contexts` li
 {{% /steps %}}
 
 ### Conclusion
-At long last, we've finally got everything working in well-oiled emailing synchronicity. We can browse, read, and send mail all without leaving the comfort of Emacs. *Everything* should be working. I'd like take a second note here, that midway through the `mu4e` configuration step, we passed the 5000 word mark of this article. Yes, I may have gotten into the weeds a bit, I'll admit, but regardless, I think the sheer length of the tutorial serves as a great reminder of just how involved this project actually is, for something as simple as email no less. However, some of you might have noticed one last missing piece: *scheduling* the fetching of new emails. That's right, there's still one final step.
+At long last, we've finally got everything working in well-oiled emailing synchronicity. We can browse, read, and send mail all without leaving the comfort of Emacs. *Everything* should be working. I'd like take a second to note here, that midway through the `mu4e` configuration step, we passed the 5000 word mark of this article. Yes, I may have gotten into the weeds a bit, I'll admit, but regardless, I think the sheer length of the tutorial serves as a great reminder of just how involved this project actually is, for something as simple as email no less. However, some of you may have noticed one last missing piece: *scheduling* the fetching of new emails. That's right, there's still one final step.
 
 ## Automatically Fetching Mail
+
+You might remember that during the `mu4e` configuration step, I disabled the built-in mail fetching functionality with the following line: `mu4e-update-interval nil`. I promised we'd touch more on this later, and now's the time. I didn't want the responsibility of checking mail to rely solely on Emacs; I still wanted my mail to be fetched in the background even if Emacs wasn't running. To fix this, I decided to write a small systemd timer and service to handle the fetching and indexing automatically. Yes, I know, systemd tends to bring about some...strong feelings to say the least, but I really don't think it's half bad. It *does* do its job well. Its job just happens to be broadly scoped. With that being said, this is really a very trivial step, so feel free to use cron, or Emacs, or even do it manually if you're so inclined. 
+
+### systemd Timer
+Our systemd-based automatic email fetching consists of two separate pieces, the timer and the service. The timer is how we schedule the periodic service invocation, and the service is where we actually do the work of fetching and indexing the mail. Note that both of these are *user* units, so they'll live in `~/.config/systemd/user/` and will be enabled with `systemctl`'s `--user` option. We'll start with the timer: 
+
+```systemd
+[Unit]
+Description=Mailbox synchronization timer
+
+[Timer]
+OnBootSec=2m
+OnUnitActiveSec=5m
+Unit=mbsync.service
+
+[Install]
+WantedBy=timers.target
+```
+
+This is nothing fancy, just a timer that starts two minutes after boot time and runs every five minutes after. As you can see, the timer activates the unit called `mbsync.service`. Per the systemd documentation, it is recommended to keep the names of associated timers and services the same, so our timer is thus named `mbsync.timer`. The marginally more interesting piece is the service file, so we'll move on to that.
+
+### systemd Service
+
+```systemd
+[Unit]
+Description=Mailbox synchronization service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/mbsync -Va
+ExecStartPost=/usr/bin/mu index
+
+[Install]
+WantedBy=default.target
+```
+
+Once again, this is pretty straightforward. The service runs `mbsync` to pull fetch the new mail, and then runs `mu index` to index it. Now we just need to activate the timer and service:
+
+```
+systemctl activate --user mbsync.timer
+systemctl activate --user mbsync.service
+```
+
+## Final Words
+Once the systemd timer and service have been invoked, we really are finally done.
