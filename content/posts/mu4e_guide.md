@@ -328,7 +328,7 @@ Yes, there is still more to configure. As I mentioned above, `mu4e` uses structu
        :match-func
        (lambda (msg)
          (when msg
-           (string-prefix-p (format "/%s" label)
+           (string-prefix-p "/HohoSunBear"
                             (mu4e-message-field msg :maildir) t)))
        :vars '((user-full-name     . "Cole Brooks")
                (user-mail-address  . "cole@hohosunbear.com")
@@ -339,4 +339,21 @@ Yes, there is still more to configure. As I mentioned above, `mu4e` uses structu
   context)
 ```
 
+```make-mu4e-context``` takes a series of keyword arguments that are used to build the data structure `mu4e` is expecting. 
+
+* `NAME` - This is the human readable name for the context. Note that when `mu4e` prompts you to select a context, the default behaviour is to bind the selection to the key corresponding to the first letter of the context name, e.g. if I'm being prompted to choose between my `Gmail` context, and my `HohoSunBear` context, I'd type `G` to select `Gmail`, and `H` to select `HohoSunBear`. All that is to say, if you're planning on sticking with the default behaviour, make sure you give your contexts names that start with different letters.
+
+* `ENTER-FUNC` & `LEAVE-FUNC` - These are both functions that are respectively called when entering and leaving the context. Here I've just printed a message, but you can do pretty much anything you want with these. 
+
+* `MATCH-FUNC` - This is an important one. `MATCH-FUNC` is a function you can pass that gets called by `mu4e` when it's trying to infer the correct context to select automatically. It takes a single parameter, `msg`, which is a plist describing the current message situation. Thankfully, `mu4e` provides a number of functions for handling the `MSG` plists, so we won't have to do it by hand. The lambda I've defined here simply checks if the `maildir` value in the `MSG` plist starts with the following string: `/HohoSunBear`. That is, if we're replying to a message in the `HohoSunBear` maildir, then we want to activate the `HohoSunBear` context for the reply. This is obviously about as simple as it gets, so feel free to go crazy with this one. 
+
+* `VARS` - Any variables you'd like to assign as part of a context go here. You should generally assign values to the `user-full-name`, `user-mail-address`, and `mu4e` dynamic folders as I've done here.
+
+All that's left to do is add the newly created context to the `mu4e-contexts` list and we're done!
+
 {{% /steps %}}
+
+### Conclusion
+At long last, we've finally got everything working in well-oiled emailing synchronicity. We can browse, read, and send mail all without leaving the comfort of Emacs. *Everything* should be working. I'd like take a second note here, that midway through the `mu4e` configuration step, we passed the 5000 word mark of this article. Yes, I may have gotten into the weeds a bit, I'll admit, but regardless, I think the sheer length of the tutorial serves as a great reminder of just how involved this project actually is, for something as simple as email no less. However, some of you might have noticed one last missing piece: *scheduling* the fetching of new emails. That's right, there's still one final step.
+
+## Automatically Fetching Mail
