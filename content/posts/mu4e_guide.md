@@ -394,11 +394,13 @@ WantedBy=default.target
 ```
 
 Once again, this is pretty straightforward. The service runs `mbsync` to pull fetch the new mail, and then runs `mu index` to index it. Now we just need to activate the timer and service:
-
 ```
 systemctl activate --user mbsync.timer
 systemctl activate --user mbsync.service
 ```
+And we should have automatic email synchronization and indexing every five minutes.
 
-## Final Words
-Once the systemd timer and service have been invoked, we really are finally done.
+## Review and Final Thoughts
+Once the systemd timer and service have been invoked, we really are finally done. Let's take a brief look back at what all we've achieved. The core of this project is the *Maildir* mailbox folder system. Because we've chosen *Maildir* to build around (not really by conscious choice as `mu4e` requires it), what we've really gotten is a mail system in which any other *Maildir* compatible components can be swapped out relatively seamlessly. To populate our *Maildir* structure, we've configured `isync`, and to index the mail we've (also not really by choice) used `mu`. Handling the sending of mail, we're using `msmtp`, and the UI we've chosen tying all these together is, obviously, `mu4e`. This project is perhaps not the *most* practical endeavor out there, but I really think it perfectly encapsulates the power of the Unix philosophy, as well as the flexibility of Emacs.
+
+Emacs was a tool I'd wanted to become proficient with for years, and this project was one of the defining moments of my skill development. Yes, it's nothing like writing your own major mode, or configuring a customized .emacs from the ground up, but I still think it's one of the better learning experiences for both Emacs, and Linux itself. It encompasses getting multiple tools working in harmony, reading *lots* of manpages, writing custom configuration files, and working in a purely text based environment. In the end, what you've got is a simple, robust, interesting, and *comfy* email experience baked directly into your text editor. If you need help getting something working, enjoyed my article, or just want to reach out, feel free to contact me and I'll gladly help or chat. Thanks.
