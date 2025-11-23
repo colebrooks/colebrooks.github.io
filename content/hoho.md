@@ -1,6 +1,7 @@
 ---
 title: Who is Hoho the sun bear?
 ---
+![landscape](/images/hoho_sitting_on_butt_Expanded.png  "Hoho sitting on his platform at Topeka Zoo")
 
 ## Introduction
 Hoho was a Malayan sun bear who lived at the Topeka Zoo and Conservation Center from 2017 until his death in 2024. At the time of his death, Hoho was the oldest known sun bear in North America, at the age of 35.
